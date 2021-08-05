@@ -1,12 +1,12 @@
 package com.eugen.mycollection;
 
-public interface List {
+public interface List<V> {
     // add o to the end of the list
-    void add(Object o);
+    void add(V value);
 
     // we can add o by index between [0, size]
     // otherwise throw new IndexOutOfBoundsException
-    void add(Object o, int index);
+    void add(V value, int index);
 
     // we can remove value by index between [0, size - 1]
     // otherwise throw new IndexOutOfBoundsException
@@ -18,11 +18,11 @@ public interface List {
     // [A, B, C] size = 3
     // we can get value by index between [0, size - 1]
     // otherwise throw new IndexOutOfBoundsException
-    Object get(int index);
+    V get(int index);
 
     // we can set o by index between [0, size - 1]
     // otherwise throw new IndexOutOfBoundsException
-    void set(Object o, int index);
+    void set(V value, int index);
 
     void clear();
 
@@ -30,14 +30,14 @@ public interface List {
 
     boolean isEmpty();
 
-    boolean contains(Object o);
+    boolean contains(V value);
 
     // [A, B, A, C] indexOf(A) -> 0
     // -1 if not exist
-    int indexOf(Object o);
+    int indexOf(V value);
 
     // [A, B, A, C] lastIndexOf(A) -> 2
-    int lastIndexOf(Object o);
+    int lastIndexOf(V value);
 
     // [A, B, C]
     String toString();

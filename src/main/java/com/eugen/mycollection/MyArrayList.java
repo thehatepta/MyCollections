@@ -1,21 +1,22 @@
 package com.eugen.mycollection;
 
-import java.util.StringJoiner;
+import java.util.*;
+import java.util.function.Consumer;
 
-public class MyArrayList implements List {
+public class MyArrayList<V> implements List<V>{
 
     private static final int DEFAULT_CAPACITY = 10;
 
-    Object list[];
+    V list[];
     int size = 0;
-    int capacity = 0;
+    int capacity;
 
     MyArrayList() {
         this(DEFAULT_CAPACITY);
     }
 
     MyArrayList(int capacity) {
-        list = new Object[capacity];
+        list =(V[]) new Object[capacity];
         this.capacity = capacity;
     }
 
@@ -30,7 +31,7 @@ public class MyArrayList implements List {
     }
 
     @Override
-    public void add(Object o) {
+    public void add(V o) {
 
         if (list.length == size) {
             int newSize = (int) (size * 1.5);
@@ -42,7 +43,7 @@ public class MyArrayList implements List {
     }
 
     @Override
-    public void add(Object o, int index) {
+    public void add(V o, int index) {
         checkForIndexBonds(index);
         System.arraycopy(list, index, list, index + 1, size - index);
         list[index] = o;
@@ -59,13 +60,13 @@ public class MyArrayList implements List {
     }
 
     @Override
-    public Object get(int index) {
+    public V get(int index) {
         checkForIndexBonds(index);
         return list[index];
     }
 
     @Override
-    public void set(Object o, int index) {
+    public void set(V o, int index) {
         checkForIndexBonds(index);
         list[index] = o;
 
@@ -73,12 +74,12 @@ public class MyArrayList implements List {
 
     @Override
     public void clear() {
-        list = new Object[DEFAULT_CAPACITY];
+        list = (V[])new Object[DEFAULT_CAPACITY];
         this.capacity = DEFAULT_CAPACITY;
         size = 0;
     }
 
-    public void remove(Object o) {
+    public void remove(V o) {
         int index = 0;
         for (Object object :
                 list) {
@@ -90,16 +91,16 @@ public class MyArrayList implements List {
     }
 
     @Override
-    public boolean contains(Object o) {
+    public boolean contains(V o) {
         return indexOf(o) != -1;
     }
 
     @Override
-    public int indexOf(Object o) {
+    public int indexOf(V o) {
         int index = 0;
-        for (Object object :
+        for (V v :
                 list) {
-            if (object != null && object.equals(o)) {
+            if (v != null && v.equals(o)) {
                 return index;
             }
             index++;
@@ -108,7 +109,7 @@ public class MyArrayList implements List {
     }
 
     @Override
-    public int lastIndexOf(Object o) {
+    public int lastIndexOf(V o) {
         int lastIndex = -1;
 
         for (int i = 0; i < size; i++) {
@@ -122,10 +123,10 @@ public class MyArrayList implements List {
     @Override
     public String toString() {
         StringJoiner stringJoiner = new StringJoiner(",");
-        for (Object object :
+        for (V v :
                 list) {
-            if (object != null) {
-                stringJoiner.add(object.toString());
+            if (v != null) {
+                stringJoiner.add(v.toString());
             }
 
         }
@@ -134,8 +135,43 @@ public class MyArrayList implements List {
 
     private void checkForIndexBonds(int index) {
         if (index > size) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("Index out of bounds");
         }
     }
+
+    private class CustomIterator<v> implements Iterator<V> {
+
+        int index = -1;
+        boolean canBeRemoved = false;
+
+        @Override
+        public boolean hasNext() {
+            return index < size-1;
+        }
+
+        @Override
+        public V next() {
+            if(!hasNext()){
+                throw new NoSuchElementException();
+            }
+            index++;
+            canBeRemoved = true;
+            return list[index];
+        }
+
+        @Override
+        public void remove() {
+            if(!canBeRemoved){
+                throw new IllegalStateException();
+            }
+            MyArrayList.this.remove(index);
+        }
+
+        @Override
+        public void forEachRemaining(Consumer<? super V> action) {
+            Iterator.super.forEachRemaining(action);
+        }
+    }
+
 
 }
