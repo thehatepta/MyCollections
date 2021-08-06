@@ -70,7 +70,7 @@ public class MyLinkedList<V> implements List<V>{
 
     @Override
     public V get(int index) {
-        return findNodeByIndex(index).value;
+        return (V) findNodeByIndex(index).value;
     }
 
     @Override
@@ -150,7 +150,7 @@ public class MyLinkedList<V> implements List<V>{
 
     private class CustomIterator<V> implements Iterator<V> {
 
-        private MyLinkedList.Node next;
+        private Node next;
         private Node<V> prev;
         int index = -1;
 
@@ -162,7 +162,7 @@ public class MyLinkedList<V> implements List<V>{
         private CustomIterator(int index){
             if(index >= 0){
                next = findNodeByIndex(index);
-                this.index = index;
+               this.index = index;
             }
         }
         @Override
@@ -192,7 +192,7 @@ public class MyLinkedList<V> implements List<V>{
         }
     }
 
-    private class Node<V> {
+    public class Node<V> {
 
         V value;
         Node <V> next;
@@ -217,7 +217,7 @@ public class MyLinkedList<V> implements List<V>{
 
     }
 
-    Node<V> findNodeByIndex(int index) {
+    Node <V> findNodeByIndex(int index) {
         Node<V>  node;
         if (index < (size / 2)) {
             node = head;
