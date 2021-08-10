@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MyArrayListTest {
     MyArrayList<String> myArrayList = null;
@@ -131,6 +132,48 @@ public class MyArrayListTest {
     @DisplayName("Checking toString() Method")
     void tesToString(){
         assertEquals(myArrayList.toString(), "A,B,C");
+    }
+
+    @Test
+    @DisplayName("Checking hasNext() Iterator Method")
+    void tesIteratorHasNext(){
+        MyArrayList.CustomIterator customIterator =  myArrayList.new CustomIterator(0);
+        assertTrue(customIterator.hasNext());
+    }
+
+    @Test
+    @DisplayName("Checking hasNext() Iterator Method")
+    void tesIteratorHasNextNegative() {
+        MyArrayList.CustomIterator customIterator = myArrayList.new CustomIterator(2);
+        assertFalse(customIterator.hasNext());
+    }
+    @Test
+    @DisplayName("Checking hasNext() exceptionCatch")
+    void tesIteratorHasNextException() {
+        try{
+            MyArrayList.CustomIterator customIterator = myArrayList.new CustomIterator(5);
+        }catch (IndexOutOfBoundsException exception){
+            assertEquals(exception.getMessage(), "Index out of bounds");
+        }
+    }
+
+    @Test
+    @DisplayName("Checking Iterator remove()")
+    void tesIteratorRemove() {
+        MyArrayList.CustomIterator customIterator = myArrayList.new CustomIterator(1);
+        customIterator.remove();
+        assertEquals(myArrayList.get(0), "A");
+        assertEquals(myArrayList.get(1), "C");
+
+    }
+
+    @Test
+    @DisplayName("Checking Iterator next()")
+    void tesIteratorNext() {
+        MyArrayList.CustomIterator customIterator = myArrayList.new CustomIterator(0);
+        customIterator.next();
+        assertEquals(myArrayList.get(customIterator.index), "B");
+
     }
 
 }

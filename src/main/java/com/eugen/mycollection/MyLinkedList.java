@@ -1,15 +1,15 @@
 package com.eugen.mycollection;
 
-import java.util.Iterator;
+
 import java.util.NoSuchElementException;
 import java.util.StringJoiner;
-import java.util.function.Consumer;
+
 
 public class MyLinkedList<V> implements List<V>{
 
     int size = 0;
-    Node <V> head= null;
-    Node <V> tail = null;
+    LinkedListNode head= null;
+    LinkedListNode tail = null;
 
 
     MyLinkedList(){
@@ -19,12 +19,12 @@ public class MyLinkedList<V> implements List<V>{
     @Override
     public void add(V value) {
         if(head == null){
-            head = tail = new Node<>(value);
+            head = tail = new LinkedListNode(value);
             size ++;
         }else{
-            Node<V> node = new Node<>(tail, value, null );
-            tail.next = node;
-            tail = node;
+            LinkedListNode linkedListNode = new LinkedListNode(tail, value, null );
+            tail.next = linkedListNode;
+            tail = linkedListNode;
             size++;
         }
 
@@ -33,15 +33,15 @@ public class MyLinkedList<V> implements List<V>{
     @Override
     public void add(V value, int index) {
         checkForIndexBonds(index);
-        Node<V> nodeIndex = findNodeByIndex(index);
-        Node<V> newNode = new Node<>(nodeIndex.prev, value, nodeIndex);
-        if(nodeIndex.prev == null){
-            head = newNode;
+        LinkedListNode linkedListNodeIndex = findNodeByIndex(index);
+        LinkedListNode newLinkedListNode = new LinkedListNode(linkedListNodeIndex.prev, value, linkedListNodeIndex);
+        if(linkedListNodeIndex.prev == null){
+            head = newLinkedListNode;
         }else{
-            nodeIndex.prev.next = newNode;
+            linkedListNodeIndex.prev.next = newLinkedListNode;
         }
 
-        nodeIndex.prev = newNode;
+        linkedListNodeIndex.prev = newLinkedListNode;
         size++;
     }
 
@@ -51,18 +51,20 @@ public class MyLinkedList<V> implements List<V>{
         remove(findNodeByIndex(index));
     }
 
-    public void remove(Node<V> node) {
+    public void remove(LinkedListNode linkedListNode) {
         if(size == 1){
             head=tail=null;
-        }else if(node.prev == null){
+        }else if(linkedListNode.prev == null){
             head.next.prev = null;
             head = head.next;
-        }else if(node.next == null){
+        }else if(linkedListNode.next == null){
             tail.prev.next = null;
             tail = tail.prev;
         }else{
-            node.next = null;
-            node.prev = null;
+            linkedListNode.next.prev = linkedListNode.prev;
+            linkedListNode.prev.next = linkedListNode.next;
+            linkedListNode.next = null;
+            linkedListNode.prev = null;
         }
 
         size --;
@@ -70,15 +72,15 @@ public class MyLinkedList<V> implements List<V>{
 
     @Override
     public V get(int index) {
-        return (V) findNodeByIndex(index).value;
+        return findNodeByIndex(index).value;
     }
 
     @Override
     public void set(V value, int index) {
         checkForIndexBonds(index);
-        Node<V> node = findNodeByIndex(index);
-        Node<V> newNode = new Node<>(node.prev, value, node.next);
-        node.prev.next = node.next.prev = newNode;
+        LinkedListNode linkedListNode = findNodeByIndex(index);
+        LinkedListNode newLinkedListNode = new LinkedListNode(linkedListNode.prev, value, linkedListNode.next);
+        linkedListNode.prev.next = linkedListNode.next.prev = newLinkedListNode;
     }
 
 
@@ -106,20 +108,20 @@ public class MyLinkedList<V> implements List<V>{
 
     @Override
     public int indexOf(V value) {
-        Node<V> node = head;
+        LinkedListNode linkedListNode = head;
         if(value == null){
             for(int i = 0; i < size; i++) {
-                if (node.value == null) {
+                if (linkedListNode.value == null) {
                      return i;
                 }
-                node = node.next;
+                linkedListNode = linkedListNode.next;
             }
         }else{
             for(int i = 0; i < size; i++){
-                if(value.equals(node.value)){
+                if(value.equals(linkedListNode.value)){
                     return i;
                 }
-                node = node.next;
+                linkedListNode = linkedListNode.next;
             }
         }
         return -1;
@@ -128,56 +130,55 @@ public class MyLinkedList<V> implements List<V>{
     @Override
     public int lastIndexOf(V value) {
         int index = -1;
-        Node<V> node = head;
+        LinkedListNode linkedListNode = head;
         if(value == null){
             for(int i = 0; i < size; i++) {
-                if (node.value == null) {
+                if (linkedListNode.value == null) {
                     index = i;
                 }
-                node = node.next;
+                linkedListNode = linkedListNode.next;
             }
         }else{
             for(int i = 0; i < size; i++){
-                if(value.equals(node.value)){
+                if(value.equals(linkedListNode.value)){
                     index = i;
                 }
-                node = node.next;
+                linkedListNode = linkedListNode.next;
             }
         }
 
         return index;
     }
 
-    private class CustomIterator<V> implements Iterator<V> {
+    public class CustomIterator{
 
-        private Node next;
-        private Node<V> prev;
+        private LinkedListNode next;
+        private LinkedListNode prev;
         int index = -1;
 
-        @Override
+
         public boolean hasNext() {
-            return index < size;
+            return index < size-1;
         }
 
-        private CustomIterator(int index){
-            if(index >= 0){
-               next = findNodeByIndex(index);
-               this.index = index;
-            }
+        public CustomIterator(int index) {
+            checkForIndexBonds(index);
+            prev = findNodeByIndex(index);
+            next = prev.next;
+            this.index = index;
+
         }
-        @Override
+
         public V next() {
             if(!hasNext()){
                 throw new NoSuchElementException();
             }
-
             prev = next;
             next = next.next;
             index++;
             return prev.value;
         }
 
-        @Override
         public void remove() {
             if(prev == null){
                 throw new IllegalStateException();
@@ -185,55 +186,28 @@ public class MyLinkedList<V> implements List<V>{
             MyLinkedList.this.remove(index);
             prev = null;
         }
-
-        @Override
-        public void forEachRemaining(Consumer<? super V> action) {
-            Iterator.super.forEachRemaining(action);
-        }
     }
 
-    public class Node<V> {
-
-        V value;
-        Node <V> next;
-        Node <V> prev;
-
-        Node(V value){
-            this(value, null);
-
-        }
-
-        Node(V value, Node<V> next){
-            this(null, value, next);
-
-        }
-
-        Node(Node<V> prev, V value, Node<V> next){
-            this.value = value;
-            this.next = next;
-            this.prev = prev;
-        }
 
 
-    }
-
-    Node <V> findNodeByIndex(int index) {
-        Node<V>  node;
+    private LinkedListNode findNodeByIndex(int index) {
+        LinkedListNode linkedListNode;
         if (index < (size / 2)) {
-            node = head;
+            linkedListNode = head;
             for (int i = 0; i < index; i++) {
-                node = node.next;
+                linkedListNode = linkedListNode.next;
             }
-            return node;
+            return linkedListNode;
 
         } else {
-            node = tail;
+            linkedListNode = tail;
             for (int i = size - 1; i > index; i--) {
-                node = node.prev;
+                linkedListNode = linkedListNode.prev;
             }
-            return node;
+            return linkedListNode;
         }
     }
+
     private void checkForIndexBonds(int index) {
         if (index > size) {
             throw new IndexOutOfBoundsException("Index out of bounds");
@@ -243,10 +217,35 @@ public class MyLinkedList<V> implements List<V>{
     @Override
     public String toString() {
         StringJoiner stringJoiner = new StringJoiner(",");
-        CustomIterator<V> customIterator = new CustomIterator<>(0);
-        while(customIterator.hasNext()){
-            stringJoiner.add(customIterator.next().toString());
+        LinkedListNode node = head;
+        while(node != null){
+            stringJoiner.add(node.value.toString());
+            node = node.next;
         }
         return stringJoiner.toString();
     }
+
+    public class LinkedListNode {
+
+        V value;
+        LinkedListNode next;
+        LinkedListNode prev;
+
+        LinkedListNode(V value){
+            this(value, null);
+
+        }
+
+        LinkedListNode(V value, LinkedListNode next){
+            this(null, value, next);
+
+        }
+
+        LinkedListNode(LinkedListNode prev, V value, LinkedListNode next){
+            this.value = value;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+
 }

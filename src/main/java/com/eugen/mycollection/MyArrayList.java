@@ -139,27 +139,32 @@ public class MyArrayList<V> implements List<V>{
         }
     }
 
-    private class CustomIterator<v> implements Iterator<V> {
+    public class CustomIterator  {
 
         int index = -1;
-        boolean canBeRemoved = false;
+        boolean canBeRemoved;
 
-        @Override
+        public CustomIterator(int index){
+            checkForIndexBonds(index);
+            canBeRemoved = true;
+            this.index = index;
+        }
+
         public boolean hasNext() {
             return index < size-1;
         }
 
-        @Override
+
         public V next() {
             if(!hasNext()){
                 throw new NoSuchElementException();
             }
+            V value = list[index];
             index++;
             canBeRemoved = true;
-            return list[index];
+            return value;
         }
 
-        @Override
         public void remove() {
             if(!canBeRemoved){
                 throw new IllegalStateException();
@@ -167,10 +172,6 @@ public class MyArrayList<V> implements List<V>{
             MyArrayList.this.remove(index);
         }
 
-        @Override
-        public void forEachRemaining(Consumer<? super V> action) {
-            Iterator.super.forEachRemaining(action);
-        }
     }
 
 

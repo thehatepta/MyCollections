@@ -79,9 +79,19 @@ public class MyLinkedListTest {
 
     @Test
     void testRemove() {
-        myLinkedList.remove(1);
-        assertEquals(myLinkedList.get(0), "A");
+        myLinkedList.remove(0);
+        assertEquals(myLinkedList.get(0), "B");
         assertEquals(myLinkedList.get(1), "C");
+        myLinkedList.add("D");
+        assertEquals(myLinkedList.get(2), "D");
+        myLinkedList.remove(2);
+        assertEquals(myLinkedList.get(0), "B");
+        assertEquals(myLinkedList.get(1), "C");
+        myLinkedList.add("D");
+        assertEquals(myLinkedList.get(2), "D");
+        myLinkedList.remove(1);
+        assertEquals(myLinkedList.get(0), "B");
+        assertEquals(myLinkedList.get(1), "D");
     }
 
     @Test
@@ -108,6 +118,48 @@ public class MyLinkedListTest {
     @DisplayName("Checking toString() Method")
     void tesToString() {
         assertEquals(myLinkedList.toString(), "A,B,C");
+
+    }
+
+    @Test
+    @DisplayName("Checking hasNext() Iterator Method")
+    void tesIteratorHasNext() {
+        MyLinkedList.CustomIterator customIterator = myLinkedList.new CustomIterator(1);
+        assertTrue(customIterator.hasNext());
+    }
+
+    @Test
+    @DisplayName("Checking hasNext() Iterator Method")
+    void tesIteratorHasNextNegative() {
+        MyLinkedList.CustomIterator customIterator = myLinkedList.new CustomIterator(2);
+        assertFalse(customIterator.hasNext());
+    }
+
+    @Test
+    @DisplayName("Checking hasNext() exceptionCatch")
+    void tesIteratorHasNextException() {
+        try{
+            MyLinkedList.CustomIterator customIterator = myLinkedList.new CustomIterator(5);
+        }catch (IndexOutOfBoundsException exception){
+            assertEquals(exception.getMessage(), "Index out of bounds");
+        }
+    }
+
+    @Test
+    @DisplayName("Checking Iterator remove()")
+    void tesIteratorRemove() {
+        MyLinkedList.CustomIterator customIterator = myLinkedList.new CustomIterator(1);
+        customIterator.remove();
+        assertEquals(myLinkedList.get(0), "A");
+        assertEquals(myLinkedList.get(1), "C");
+    }
+
+    @Test
+    @DisplayName("Checking Iterator next()")
+    void tesIteratorNext() {
+        MyLinkedList.CustomIterator customIterator = myLinkedList.new CustomIterator(0);
+        customIterator.next();
+        assertEquals(myLinkedList.get(customIterator.index), "B");
 
     }
 }
