@@ -134,7 +134,7 @@ public class MyArrayList<V> implements List<V>{
     }
 
     private void checkForIndexBonds(int index) {
-        if (index > size) {
+        if (index > size || index < 0) {
             throw new IndexOutOfBoundsException("Index out of bounds");
         }
     }
